@@ -1,0 +1,71 @@
+NOTES ABOUT THE CKIEBGEN PROGRAM:    (Sam Golob)
+
+0.  When this program became "fully developed", I got to prefer
+    its use over IBM's IEBGENER program, once IEBGENER started
+    to use "system determined blocksize", and I felt a big loss
+    of control.  With this program I have exquisite control of
+    the blocksize of the output dataset.
+
+1.  The original program was in member CKIEBGE0.  It was a very
+    simple QSAM GET and PUT, which copied RECORDS (not blocks)
+    from one dataset to another.  It was a very simple dataset
+    copying program.
+
+2.  I tried to add some "bells and whistles" to it, especially
+    to add a SYSPRINT file that tells you what you copied from,
+    and what you copied to, and how many records were copied.
+
+3.  Since I was writing my "MVS Tools and Tricks of the Trade"
+    column for "Technical Support" magazine (from NsSPA) at the
+    time, I made a request for the readers to improve this
+    program, as an exercise.  Warren Whitford took me up on it.
+
+4.  The program went through eight iterations, and got much better.
+
+5.  The current program produces a report, as follows:
+
+CKIEBGEN - SEQUENTIAL COPY PROGRAM - LEVEL 009     03/12/2024  00:16:54
+ JFCB REPORT OF DATASET CHARACTERISTICS
+   SYSUT1 DSN = SBGOLOB.CBT.EDIT
+      MEMBER  = FILE001
+      VOLSER  = DATA02
+      DSORG   = PO
+      RECFM   = FB
+      LRECL   =           80
+      BLKSIZE =       27,920
+   SYSUT2 DSN = SBGOLOB.TEST.DATA.PDS
+      MEMBER  = FILE1PC
+      VOLSER  = WORKA6
+      DSORG   = PO
+      RECFM   = FB
+      LRECL   =           80
+      BLKSIZE =       27,920
+
+  RECORDS  IN =               94,447
+  RECORDS OUT =               94,447
+
+
+6.  I had a need to add a partial copy capability, so I added
+    SKIP=mmmm and COPY=nnnn capability to the program.  These
+    quantities were entered in an optional SYSIN DD name.  The
+    program can skip a certain number of RECORDS, and then copy
+    a certain number of records, and then stop.
+
+    For example, in the previous case, had I inserted a SYSIN
+    DD card in the JCL, with the coding:
+
+  //SYSIN DD *
+  SKIP=1000
+  COPY=1000
+  /*
+
+    Then the report (at the bottom) would have read as follows:
+
+      BLKSIZE =       27,920
+
+  RECORDS  IN =                2,001
+  RECORDS OUT =                1,000
+  SKIPPED     =                1,000
+  COPIED      =                1,000
+
+
